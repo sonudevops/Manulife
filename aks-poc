@@ -1,0 +1,98 @@
+
+# This is a basic workflow to help you get started with Action
+name: aks-poc
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ bb2-aks-development ]
+  pull_request:
+    branches: [ bb2-aks-development ]
+    
+  # Allows you to run this workflow manually from the Actions tab 
+  workflow_dispatch:
+
+# The environemnt variables are used from the "DEVELOPMENT" environment
+env:
+    DEVELOPMENT
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    # Azure Login 
+    - uses: actions/checkout@main
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.POC_AZURE_CREDENTIALS }}
+    
+
+     # Connect to Azure Container Registry (ACR)
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.POC_AKS_REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.POC_AKS_REGISTRY_USERNAME }} 
+        password: ${{ secrets.POC_AKS_REGISTRY_PASSWORD }}
+
+     
+
+    # Container build the image and push to a Azure Container Registry (ACR)
+    - run: |
+        docker build . -t ${{ env.POC_AKS_REGISTRY_NAME }}.azurecr.io/${{ env.POC_AKS_APP_NAME }}:${{ github.sha }}
+      working-directory: ./<path-to-Dockerfile-directory>
+
+  scanimage:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    # Scan the image for vulnerabilities 
+    - name: Scan image
+      uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ secrets.ACR_LOGIN_SERVER }}/spring-petclinic:${{ github.run_number }}
+        severity-threshold: CRITICAL
+        run-quality-checks: true    
+
+    # Pushed the scanned image to a Azure Container Registry (ACR)
+    - run: docker push ${{ env.POC_AKS_REGISTRY_NAME }}.azurecr.io/${{ env.POC_AKS_APP_NAME }}:${{ github.sha }}
+      
+
+
+  # Create namespace if doesn't exist
+  - run: |
+      kubectl create namespace ${{ env.POC_AKS_NAMESPACE }} --dry-run=client -o json | kubectl apply -f -  
+
+  # Create image pull secret for ACR
+  - uses: azure/k8s-create-secret@v1
+    with:
+      container-registry-url: ${{ env.POC_AKS_REGISTRY_NAME }}.azurecr.io
+      container-registry-username: ${{ secrets.POC_AKS_REGISTRY_USERNAME }}
+      container-registry-password: ${{ secrets.POC_AKS_REGISTRY_PASSWORD }}
+      secret-name: ${{ env.POC_AKS_SECRET }}
+      namespace: ${{ env.POC_AKS_NAMESPACE }}
+      arguments: --force true
+
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    needs: [build]
+    
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps: 
+    # Deploy app to AKS
+    - uses: azure/k8s-deploy@v1
+      with:
+        manifests: |
+          ${{ github.workspace }}/manifests/bb2-app_deployment.yaml
+          ${{ github.workspace }}/manifests/bb2-app_service.yaml
+        images: |
+          ${{ env.POC_REGISTRY_NAME }}.azurecr.io/${{ env.POC_AKS_APP_NAME }}:${{ github.sha }}
+        imagepullsecrets: |
+          ${{ env.SECRET }}
+        namespace: ${{ env.POC_AKS_NAMESPACE }}
