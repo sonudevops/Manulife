@@ -22,12 +22,12 @@ jobs:
     environment:
       name: ${{ github.event.inputs.envName }}
     steps:
-    #- uses: actions/checkout@master
+    - uses: actions/checkout@master
     
-    #- name: Login to Azure
-     # uses: azure/login@v1
-     # with:
-      #  creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
         
     # Connect to Azure Container Registry (ACR)
     - name: Login to ACR
