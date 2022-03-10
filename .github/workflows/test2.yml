@@ -11,17 +11,16 @@ on:
   workflow_dispatch:
 
 # The environemnt variables are used from the "DEVELOPMENT" environment
-env: DEV
-  jobs:
-     build:
-      runs-on: ubuntu-latest
-      steps: 	 	
-    # Azure Login 
-        - uses: actions/checkout@main
-        - name: Azure Login
-          uses: azure/login@v1
-          with:
-          creds: ${{ secrets.POC_AZURE_CREDENTIALS }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
       
 
      # Connect to Azure Container Registry (ACR)
