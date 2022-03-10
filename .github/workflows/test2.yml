@@ -11,9 +11,8 @@ on:
   workflow_dispatch:
 
 # The environemnt variables are used from the "DEVELOPMENT" environment
-env:
-   DEV
-   jobs:
+env: DEV
+  jobs:
      build:
       runs-on: ubuntu-latest
       steps: 	 	
