@@ -1,0 +1,81 @@
+# This is a basic workflow to help you get started with Action
+
+name: aks-poc
+
+on:
+
+  # Triggers the workflow on push or pull request   events but only for the main branch
+
+  push:
+
+    branches: [ bb2-aks-development ]
+
+  pull_request:
+
+    branches: [ bb2-aks-development ]
+
+ 
+
+env:
+
+ APP_NAME: bb2app
+
+ AZURE_CONTAINER_REGISTRY: seagwamaksdevacr
+
+ RESOURCE_GROUP: seagwam-aks-dev-rg
+
+ CLUSTER_NAME: seagwam-dev-aks
+
+ NAMESPACE: ns-gwam-aw-ifunds-dev
+
+ SECRET: acr-secret
+
+ 
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@master
+
+   
+
+    - name: Login to Azure
+
+      uses: azure/login@v1
+
+      with:
+
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+       
+
+     # Connect to Azure Container Registry (ACR)
+
+    - name: Login to ACR
+
+      uses: azure/docker-login@v1
+
+      with:
+
+        login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+
+        username: ${{ secrets.REGISTRY_USERNAME }}
+
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+   
+
+     # Container build and push to a Azure Container Registry (ACR)
+
+    - name: Build image and push to ACR
+
+      run: |
+
+         docker build . -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+
+         working-directory: ./
