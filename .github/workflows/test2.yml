@@ -12,7 +12,7 @@ on:
 
 # The environemnt variables are used from the "DEVELOPMENT" environment
 env:
-  DEV
+  my_var: ${{ github.ref }}
 jobs:
   build:
     runs-on: ubuntu-latest
