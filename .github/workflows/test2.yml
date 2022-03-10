@@ -13,9 +13,9 @@ on:
      envName:
 
 # The environemnt variables are used from the "DEVELOPMENT" environment
-env:
-   name: ${{ env name }}
-   my_var: ${{ github.ref }}
+#env:
+ #  name: ${{ env name }}
+  # my_var: ${{ github.ref }}
 jobs:
   build:
     runs-on: ubuntu-latest
