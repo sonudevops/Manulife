@@ -13,12 +13,9 @@ on:
 # The environemnt variables are used from the "DEVELOPMENT" environment
 env:
  DEV
-#######A workflow run is made up of one or more jobs that can run sequentially or in parallel#
   jobs:
     build:
-
      runs-on: ubuntu-latest
-
      steps: 	 	
     # Azure Login 
       - uses: actions/checkout@main
