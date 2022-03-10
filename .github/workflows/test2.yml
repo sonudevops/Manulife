@@ -1,5 +1,4 @@
-tasks:
- - name: akspoc
+name: aks-poc
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
