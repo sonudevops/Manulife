@@ -13,8 +13,8 @@ on:
 # The environemnt variables are used from the "DEVELOPMENT" environment
 env:
  DEV
- jobs:
-     build:
+  jobs:
+    build:
      runs-on: ubuntu-latest
      steps: 	 	
     # Azure Login 
