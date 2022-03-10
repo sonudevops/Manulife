@@ -1,4 +1,3 @@
-###########
 name: aks-poc
 # Controls when the action will run.
 on:
@@ -47,19 +46,6 @@ jobs:
        # docker build . -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
        docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
       # working-directory: ./<path-to-Dockerfile-directory>
-
-      scanimage:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    needs: [build]
-
-    # Scan the image for vulnerabilities 
-    - name: Scan image
-      uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ secrets.ACR_LOGIN_SERVER }}/spring-petclinic:${{ github.run_number }}
-        severity-threshold: CRITICAL
-        run-quality-checks: true  
       
   
  
