@@ -10,12 +10,12 @@ on:
   # Allows you to run this workflow manually from the Actions tab 
   workflow_dispatch:
     inputs:
-      #envName:
+      envName:
 
 # The environemnt variables are used from the "DEVELOPMENT" environment
-#env:
-#  name: ${{ env name }}
-#  my_var: ${{ github.ref }}
+  env:
+  name: ${{ env name }}
+  my_var: ${{ github.ref }}
 jobs:
   build:
     runs-on: ubuntu-latest
