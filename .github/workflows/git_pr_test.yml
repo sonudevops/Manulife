@@ -8,4 +8,7 @@ jobs:
   loadenv:
     name: serup pipeline Enviroment
     runs-on: ubuntu-latest
-    
+    outputs:
+      hasSB: ${{ steps.loadEnvStep.outputs.hasSB }}
+      requireBuild: ${{ steps.loadEnvStep.outputs.requireBuild }}
+      lang: ${{ steps.loadEnvStep.outputs.lang }}
