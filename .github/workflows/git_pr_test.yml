@@ -1,0 +1,6 @@
+name: 0.Git/ PR Test
+on:
+  workflow_dispatch:
+env:
+  github_token: ${{ secrets.GIT_HUB_TOKEN }}
+  provisioning_token: ${{ secrets.PROVISIONING_TOKEN }}
